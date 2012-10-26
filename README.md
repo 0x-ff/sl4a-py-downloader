@@ -13,8 +13,10 @@ HTML-ресурсов, уровнями глубже каталога закач
 
 К примеру с URL http://example.com/dir/dir/page.html не будут закачиваться 
 страницы http://example.com/dir/page.html, http://example.com/dir/dir2/page.html,
-http://www.example.com/dir/dir/page1.html, http://example.com/dir/dir/dir2/page.html
 И очевидно не будут закачиваться http://other.example.com/page.html.
+
+А вот такие http://www.example.com/dir/dir/page1.html, http://example.com/dir/dir/dir2/page.html - 
+будут.
 
 Это не дает качалке начать беспорядочно гулять по сайту или кучке сайтов, или 
 "растекаться" по закачке на одном уровне вложенности каталогов, что очень удобно при 
