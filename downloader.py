@@ -142,7 +142,8 @@ class Browser:
 class Parser:
     def get_urls(html):
         result = []
-        urls = re.findall('<[^>]+\x20(src|href)\s*\=\s*["\']{0,1}([^\"\'\x20>]+)["\']{0,1}[^>]*>', html, re.I)
+        regstr = '<[^>]+\x20(src|href)\s*\=\s*["\']{0,1}([^\"\'\x20>\#]+)(|\#[^"\']*)["\']{0,1}[^>]*>'
+        urls = re.findall(regstr, html, re.I)
         for link in urls:
             result.append(link[1])
         return result
@@ -215,6 +216,9 @@ class Formatter:
                 html = html.replace("'" + url + "'", "'" + relative_url + "'")
                 html = html.replace('=' + url + '>', '=' + relative_url + '>')
                 html = html.replace('=' + url + ' ', '=' + relative_url + ' ')
+                html = html.replace('"' + url + '#', '"' + relative_url + '#')
+                html = html.replace("'" + url + "#", "'" + relative_url + "#")
+                html = html.replace('=' + url + '#', '=' + relative_url + '#')
         return html
     format=staticmethod(format)
     get_cache_url=staticmethod(get_cache_url)
