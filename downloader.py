@@ -10,7 +10,9 @@ from operator import truth
 import android
 
 cache_dir = '/mnt/sdcard/sl4a/sl4a-py-downloader-cache'
+#cache_dir = '/home/pavel/github/sl4a-py-downloader/sl4a-py-downloader-cache'
 seconds   = 3
+ignore_urls = set('')
 
 def quickAlert(msg,app): 
     app.dialogCreateAlert(msg)
@@ -71,10 +73,12 @@ class Browser:
                 self.__dict__['html'] = r.read()
             except urllib2.HTTPError as err:
                 self.__dict__['last_err'] = str(err)
+                ignore_urls.add(url)
                 return 0
             return 1
         else:
             logger.message("Empty cache name for '" + url + "'")
+            ignore_urls.add(url)
             return 0
 
     def exists_at_cache(self,url):
@@ -107,10 +111,12 @@ class Browser:
                     shutil.copyfileobj(r,f)
             except urllib2.HTTPError as err:
                 self.__dict__['last_err'] = str(err)
+                ignore_urls.add(url)
                 res = 0
             return res
         else:
             logger.message("Empty cache name for '" + url + "'")
+            ignore_urls.add(url)
             return 0
 
     def get_cache_name(url):
@@ -228,6 +234,7 @@ class Formatter:
 app = android.Android()
 
 start_url = app.dialogGetInput("Start Url", "Type please start URL here", "http://example.com").result
+#start_url = 'http://framework.zend.com/learn'
 if not os.path.exists(cache_dir):
     os.makedirs(cache_dir)
 
@@ -238,6 +245,14 @@ browser.push_back(start_url)
 
 while browser.has_more_urls():
     url = browser.shift()
+    
+    if url in ignore_urls:
+        # keep silence here !!!
+        #logger.message(url + " ignored")
+        continue
+    #else:
+        #print ignore_urls
+            
     if not browser.exists_at_cache(url):
         if browser.is_possible_html_content(url):
             if browser.get(url):
@@ -275,6 +290,7 @@ while browser.has_more_urls():
             logger.message(browser.get_last_error())
     else:
         logger.message("url " + url + " already exists")
+        ignore_urls.add(url)
 logger.dump()
 app.vibrate()
 quickAlert("download from start URL: " + start_url + " completed", app)
